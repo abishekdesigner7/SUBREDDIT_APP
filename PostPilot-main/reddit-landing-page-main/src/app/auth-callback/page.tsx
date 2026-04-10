@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FiLoader } from "react-icons/fi";
 import { motion } from "framer-motion";
 import CelebrationOverlay from "@/components/ui/CelebrationOverlay";
 
-export default function AuthCallback() {
+function AuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showCelebration, setShowCelebration] = useState(false);
@@ -39,9 +39,9 @@ export default function AuthCallback() {
 
   return (
     <div style={{
-      minHeight: "100vh", background: "#0a0a0a",
+      minHeight: "100vh", background: "var(--bg-base)",
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-      gap: 20, color: "#fff"
+      gap: 20, color: "var(--text-primary)",
     }}>
       <motion.div
         animate={{ rotate: 360 }}
@@ -52,11 +52,23 @@ export default function AuthCallback() {
       <h2 style={{ fontFamily: "var(--font-space)", fontWeight: 700, fontSize: "1.2rem" }}>
         Finalizing authentication...
       </h2>
-      <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.9rem" }}>
+      <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>
         Please wait while we set up your session.
       </p>
 
       <CelebrationOverlay show={showCelebration} variant="reddit" onDone={handleDone} />
     </div>
+  );
+}
+
+export default function AuthCallback() {
+  return (
+    <Suspense fallback={
+      <div style={{ minHeight: "100vh", background: "var(--bg-base)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <FiLoader size={48} color="#FF4500" />
+      </div>
+    }>
+      <AuthCallbackContent />
+    </Suspense>
   );
 }
