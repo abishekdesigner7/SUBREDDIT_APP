@@ -1,0 +1,7 @@
+{
+  "rootDirectory": "PostPilot-main/reddit-landing-page-main",
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm install"
+}
