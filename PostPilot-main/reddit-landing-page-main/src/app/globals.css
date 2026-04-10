@@ -87,12 +87,12 @@ html[data-theme='light'] .pricing-card-border:hover {
 
 /* Non-primary pricing CTA button */
 .pricing-cta-outline {
-  background: transparent;
+  background: #ffffff;
   color: #FF4500;
-  border: 2px solid #FF4500;
+  border: none;
 }
 .pricing-cta-outline:hover {
-  background: rgba(255, 69, 0, 0.08);
+  background: #f0f0f0;
   color: #FF4500;
 }
 html[data-theme='light'] .pricing-cta-outline {
