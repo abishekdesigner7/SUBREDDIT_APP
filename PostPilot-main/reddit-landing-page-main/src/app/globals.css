@@ -85,6 +85,26 @@ html[data-theme='light'] .pricing-card-border:hover {
   border-color: #FF4500 !important;
 }
 
+/* Non-primary pricing CTA button */
+.pricing-cta-outline {
+  background: #ffffff;
+  color: #FF4500;
+  border: 2px solid #ffffff;
+}
+.pricing-cta-outline:hover {
+  background: #f0f0f0;
+  color: #FF4500;
+}
+html[data-theme='light'] .pricing-cta-outline {
+  background: transparent;
+  color: #111827;
+  border: 2px solid #111827;
+}
+html[data-theme='light'] .pricing-cta-outline:hover {
+  background: #111827;
+  color: #ffffff;
+}
+
 ::selection { background: #FF4500; color: #fff; }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
