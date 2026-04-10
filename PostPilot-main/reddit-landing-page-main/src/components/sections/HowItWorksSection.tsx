@@ -70,8 +70,9 @@ export default function HowItWorksSection() {
                 </div>
                 {i < steps.length - 1 && (
                   <div style={{
-                    flex: 1, height: 1, marginLeft: 14,
-                    background: "linear-gradient(90deg, var(--orange-glow) 0%, transparent 100%)",
+                    flex: 1, height: 2, marginLeft: 14, borderRadius: 99,
+                    background: "linear-gradient(90deg, var(--orange) 0%, var(--border) 100%)",
+                    opacity: 0.35,
                   }} />
                 )}
               </div>
