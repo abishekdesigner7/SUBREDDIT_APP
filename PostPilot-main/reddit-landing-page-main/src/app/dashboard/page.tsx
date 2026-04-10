@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -11,7 +11,7 @@ import TabBar from "@/components/dashboard/TabBar";
 import PostCard from "@/components/dashboard/PostCard";
 import { usePosts } from "@/lib/usePosts";
 
-export default function DashboardPage() {
+function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { posts, loading, removePost, clearAll } = usePosts();
@@ -366,5 +366,15 @@ export default function DashboardPage() {
         </AnimatePresence>
       </main>
     </>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ minHeight: "100vh", background: "var(--bg-base)" }} />
+    }>
+      <DashboardContent />
+    </Suspense>
   );
 }
