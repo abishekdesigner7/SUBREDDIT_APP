@@ -19,7 +19,7 @@ export default function HeroSection() {
       position: "relative", minHeight: "100vh",
       display: "flex", flexDirection: "column",
       justifyContent: "center",
-      padding: "100px 48px 60px",
+      padding: "120px 48px 80px",
       overflow: "hidden",
       background: "var(--bg-base)",
     }}>
@@ -116,7 +116,7 @@ export default function HeroSection() {
             position: "relative", zIndex: 1, borderRadius: 20,
             border: "1px solid var(--border)",
             boxShadow: "0 32px 80px rgba(0,0,0,0.25)",
-            aspectRatio: "16/9", minHeight: 460,
+            aspectRatio: "16/9", minHeight: 340,
             background: "var(--bg-card)",
             display: "flex", flexDirection: "column",
             alignItems: "center", justifyContent: "center", gap: 16,
