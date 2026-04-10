@@ -161,7 +161,7 @@ export default function PricingSection() {
                       display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                       width: "100%", padding: "12px 20px", borderRadius: 12,
                       cursor: isCurrentPlan ? "default" : loadingPlan ? "not-allowed" : "pointer",
-                      border: isCurrentPlan ? "none" : plan.ctaPrimary ? "none" : undefined,
+                      border: "none",
                       fontWeight: 700, fontSize: "0.88rem", transition: "all 0.2s",
                       background: isCurrentPlan ? "#22c55e" : plan.ctaPrimary ? "var(--orange)" : undefined,
                       color: isCurrentPlan ? "#fff" : plan.ctaPrimary ? "#fff" : undefined,

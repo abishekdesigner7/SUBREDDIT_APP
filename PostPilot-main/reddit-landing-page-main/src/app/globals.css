@@ -96,13 +96,13 @@ html[data-theme='light'] .pricing-card-border:hover {
   color: #FF4500;
 }
 html[data-theme='light'] .pricing-cta-outline {
-  background: transparent;
-  color: #111827;
-  border: 2px solid #111827;
+  background: transparent !important;
+  color: #111827 !important;
+  border: 2px solid #111827 !important;
 }
 html[data-theme='light'] .pricing-cta-outline:hover {
-  background: #111827;
-  color: #ffffff;
+  background: #111827 !important;
+  color: #ffffff !important;
 }
 
 ::selection { background: #FF4500; color: #fff; }
