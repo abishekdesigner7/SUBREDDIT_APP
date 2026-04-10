@@ -27,10 +27,14 @@ const POST_TYPES: { type: FormData["postType"]; icon: React.ElementType; label: 
 ];
 
 const inputStyle: React.CSSProperties = {
-  width: "100%", background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10,
-  padding: "11px 14px", color: "#fff",
-  fontSize: "0.92rem", outline: "none",
+  width: "100%",
+  background: "var(--bg-raised)",
+  border: "1px solid var(--border)",
+  borderRadius: 10,
+  padding: "11px 14px",
+  color: "var(--text-primary)",
+  fontSize: "0.92rem",
+  outline: "none",
   transition: "border-color 0.2s",
   boxSizing: "border-box",
 };
@@ -39,11 +43,12 @@ function Field({ label, optional, children }: { label: string; optional?: boolea
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 7, marginBottom: 20 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "rgba(255,255,255,0.6)" }}>{label}</span>
+        <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--text-secondary)" }}>{label}</span>
         {optional && (
           <span style={{
-            fontSize: "0.63rem", fontWeight: 600, color: "rgba(255,255,255,0.3)",
-            background: "rgba(255,255,255,0.05)", borderRadius: 999, padding: "2px 8px",
+            fontSize: "0.63rem", fontWeight: 600, color: "var(--text-muted)",
+            background: "var(--glass)", borderRadius: 999, padding: "2px 8px",
+            border: "1px solid var(--border)",
           }}>optional</span>
         )}
       </div>
@@ -101,7 +106,7 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
     e.currentTarget.style.borderColor = "rgba(255,69,0,0.5)";
   }
   function blurStyle(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
+    e.currentTarget.style.borderColor = "var(--border)";
   }
 
   function validateStep1() {
@@ -132,9 +137,7 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
   async function handlePublish() {
     let userObj: any = {};
     if (typeof window !== "undefined") {
-      try {
-        userObj = JSON.parse(localStorage.getItem("user") || "{}");
-      } catch {}
+      try { userObj = JSON.parse(localStorage.getItem("user") || "{}"); } catch {}
     }
 
     const token = localStorage.getItem("token");
@@ -154,16 +157,13 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
     setPublishing(true);
 
     try {
-      // 10-minute gap check
       const existingPosts = await getPosts();
       const scheduledPosts = existingPosts.filter(p => p.status === "scheduled" && p.id !== editId);
-      
       const newTime = new Date(`${form.date}T${form.time}`).getTime();
-      
+
       for (const p of scheduledPosts) {
         const pTime = new Date(`${p.date}T${p.time}`).getTime();
         const diffMins = Math.abs(newTime - pTime) / (1000 * 60);
-        
         if (diffMins < 10) {
           toast.error("⚠️ Strict 10-minute gap required between posts.");
           setPublishing(false);
@@ -174,9 +174,6 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
       const prefix = targetType === "subreddit" ? "r/" : "u/";
       const cleanedSub = form.subreddit.replace(/^(r\/|u\/)/, "").trim();
       const finalTarget = prefix + cleanedSub;
-
-      // Build scheduledTime as a proper ISO string in the user's local timezone
-      // so the backend stores the correct UTC time regardless of server location
       const localDate = new Date(`${form.date}T${form.time}`);
       const scheduledTimeISO = localDate.toISOString();
 
@@ -199,26 +196,22 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
 
   const handleImageFile = async (file: File) => {
     if (!file) return;
-    
     if (typeof window !== "undefined" && !localStorage.getItem("token")) {
       toast.error("Please log in or sign up before uploading images!");
       router.push("/login");
       return;
     }
-
     setUploadingImage(true);
     try {
       const data = await apiFetch("/upload/presign", {
         method: "POST",
         body: JSON.stringify({ fileType: file.type }),
       });
-      
       await fetch(data.uploadUrl, {
         method: "PUT",
         headers: { "Content-Type": file.type },
         body: file,
       });
-
       set("imageUrl", data.publicUrl);
     } catch (err) {
       console.error("Upload failed", err);
@@ -254,15 +247,15 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
                 {POST_TYPES.map(({ type, icon: Icon, label, desc }) => (
                   <button key={type} onClick={() => set("postType", type)} style={{
-                    background: form.postType === type ? "rgba(255,69,0,0.07)" : "rgba(255,255,255,0.03)",
-                    border: form.postType === type ? "1.5px solid rgba(255,69,0,0.45)" : "1.5px solid rgba(255,255,255,0.08)",
+                    background: form.postType === type ? "rgba(255,69,0,0.08)" : "var(--bg-raised)",
+                    border: form.postType === type ? "1.5px solid rgba(255,69,0,0.5)" : "1.5px solid var(--border)",
                     borderRadius: 12, padding: "14px 10px", cursor: "pointer",
                     display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
                     transition: "all 0.2s",
                   }}>
-                    <Icon size={20} color={form.postType === type ? "#FF4500" : "rgba(255,255,255,0.4)"} />
-                    <span style={{ fontSize: "0.82rem", fontWeight: 700, color: form.postType === type ? "#fff" : "rgba(255,255,255,0.5)" }}>{label}</span>
-                    <span style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.3)" }}>{desc}</span>
+                    <Icon size={20} color={form.postType === type ? "#FF4500" : "var(--text-muted)"} />
+                    <span style={{ fontSize: "0.82rem", fontWeight: 700, color: form.postType === type ? "#FF4500" : "var(--text-secondary)" }}>{label}</span>
+                    <span style={{ fontSize: "0.65rem", color: "var(--text-muted)" }}>{desc}</span>
                   </button>
                 ))}
               </div>
@@ -272,22 +265,22 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
             <Field label="Target">
               <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                 {/* Target Type Toggle */}
-                <div style={{ display: "flex", background: "rgba(255,255,255,0.04)", borderRadius: 10, padding: 4, border: "1px solid rgba(255,255,255,0.1)" }}>
+                <div style={{ display: "flex", background: "var(--bg-raised)", borderRadius: 10, padding: 4, border: "1px solid var(--border)" }}>
                   <button type="button" onClick={() => setTargetType("subreddit")} style={{
                     padding: "8px 12px", border: "none", borderRadius: 7, fontSize: "0.8rem", fontWeight: 700, cursor: "pointer", transition: "all 0.2s",
                     background: targetType === "subreddit" ? "#FF4500" : "transparent",
-                    color: targetType === "subreddit" ? "#fff" : "rgba(255,255,255,0.4)"
+                    color: targetType === "subreddit" ? "#fff" : "var(--text-muted)",
                   }}>r/ Community</button>
                   <button type="button" onClick={() => setTargetType("user")} style={{
                     padding: "8px 12px", border: "none", borderRadius: 7, fontSize: "0.8rem", fontWeight: 700, cursor: "pointer", transition: "all 0.2s",
                     background: targetType === "user" ? "#FF4500" : "transparent",
-                    color: targetType === "user" ? "#fff" : "rgba(255,255,255,0.4)"
+                    color: targetType === "user" ? "#fff" : "var(--text-muted)",
                   }}>u/ Profile</button>
                 </div>
 
                 {/* Input */}
                 <div style={{ position: "relative", flex: 1, minWidth: 200 }}>
-                  <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: "0.92rem", color: "rgba(255,255,255,0.35)", pointerEvents: "none", fontWeight: 600 }}>
+                  <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: "0.92rem", color: "var(--text-muted)", pointerEvents: "none", fontWeight: 600 }}>
                     {targetType === "subreddit" ? "r/" : "u/"}
                   </span>
                   <input
@@ -306,10 +299,10 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               <Field label="Date">
                 <div style={{ position: "relative" }}>
-                  <FiCalendar size={14} color="rgba(255,255,255,0.35)" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} />
+                  <FiCalendar size={14} color="var(--text-muted)" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} />
                   <input type="date" value={form.date} onChange={e => set("date", e.target.value)}
                     onFocus={focusStyle} onBlur={blurStyle}
-                    style={{ ...inputStyle, paddingLeft: 34, colorScheme: "dark" }}
+                    style={{ ...inputStyle, paddingLeft: 34, colorScheme: "auto" }}
                   />
                 </div>
                 {errors.date && <span style={{ fontSize: "0.72rem", color: "#FF4500" }}>{errors.date}</span>}
@@ -322,15 +315,15 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                       onClick={() => setActiveTimeField(activeTimeField === "hour" ? null : "hour")}
                       style={{
                         ...inputStyle, cursor: "pointer", display: "flex", alignItems: "center", gap: 10,
-                        borderColor: activeTimeField === "hour" ? "rgba(255,69,0,0.5)" : "rgba(255,255,255,0.1)",
-                        background: activeTimeField === "hour" ? "rgba(255,69,0,0.04)" : "rgba(255,255,255,0.04)",
+                        borderColor: activeTimeField === "hour" ? "rgba(255,69,0,0.5)" : "var(--border)",
+                        background: activeTimeField === "hour" ? "rgba(255,69,0,0.04)" : "var(--bg-raised)",
                       }}
                     >
-                      <FiClock size={14} color={activeTimeField === "hour" ? "#FF4500" : "rgba(255,255,255,0.4)"} />
-                      <span style={{ fontSize: "0.95rem", fontWeight: 700 }}>
+                      <FiClock size={14} color={activeTimeField === "hour" ? "#FF4500" : "var(--text-muted)"} />
+                      <span style={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--text-primary)" }}>
                         {form.time ? formatAmPm(form.time).split(":")[0].padStart(2, "0") : "12"}
                       </span>
-                      <FiChevronDown size={14} style={{ marginLeft: "auto", opacity: 0.3, transform: activeTimeField === "hour" ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
+                      <FiChevronDown size={14} color="var(--text-muted)" style={{ marginLeft: "auto", transform: activeTimeField === "hour" ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
                     </div>
 
                     <AnimatePresence>
@@ -341,8 +334,8 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                           exit={{ opacity: 0, y: 5, scale: 0.95 }}
                           style={{
                             position: "absolute", top: "110%", left: 0, right: 0, zIndex: 100,
-                            background: "#121212", border: "1px solid rgba(255,255,255,0.12)",
-                            borderRadius: 12, boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                            background: "var(--bg-card)", border: "1px solid var(--border)",
+                            borderRadius: 12, boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
                             maxHeight: 180, overflowY: "auto", padding: 6,
                           }}
                         >
@@ -365,7 +358,7 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                                 style={{
                                   padding: "10px 12px", borderRadius: 8, cursor: "pointer",
                                   fontSize: "0.85rem", fontWeight: isSelected ? 800 : 500,
-                                  color: isSelected ? "#FF4500" : "rgba(255,255,255,0.6)",
+                                  color: isSelected ? "#FF4500" : "var(--text-secondary)",
                                   background: isSelected ? "rgba(255,69,0,0.1)" : "transparent",
                                   transition: "all 0.15s",
                                 }}
@@ -379,7 +372,7 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                     </AnimatePresence>
                   </div>
 
-                  <span style={{ color: "rgba(255,255,255,0.2)", fontWeight: 800 }}>:</span>
+                  <span style={{ color: "var(--text-muted)", fontWeight: 800 }}>:</span>
 
                   {/* Minute Custom Select */}
                   <div style={{ position: "relative", flex: 1 }}>
@@ -387,14 +380,14 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                       onClick={() => setActiveTimeField(activeTimeField === "minute" ? null : "minute")}
                       style={{
                         ...inputStyle, cursor: "pointer", display: "flex", alignItems: "center", gap: 10,
-                        borderColor: activeTimeField === "minute" ? "rgba(255,69,0,0.5)" : "rgba(255,255,255,0.1)",
-                        background: activeTimeField === "minute" ? "rgba(255,69,0,0.04)" : "rgba(255,255,255,0.04)",
+                        borderColor: activeTimeField === "minute" ? "rgba(255,69,0,0.5)" : "var(--border)",
+                        background: activeTimeField === "minute" ? "rgba(255,69,0,0.04)" : "var(--bg-raised)",
                       }}
                     >
-                      <span style={{ fontSize: "0.95rem", fontWeight: 700 }}>
+                      <span style={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--text-primary)" }}>
                         {form.time ? form.time.split(":")[1] : "00"}
                       </span>
-                      <FiChevronDown size={14} style={{ marginLeft: "auto", opacity: 0.3, transform: activeTimeField === "minute" ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
+                      <FiChevronDown size={14} color="var(--text-muted)" style={{ marginLeft: "auto", transform: activeTimeField === "minute" ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
                     </div>
 
                     <AnimatePresence>
@@ -405,8 +398,8 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                           exit={{ opacity: 0, y: 5, scale: 0.95 }}
                           style={{
                             position: "absolute", top: "110%", left: 0, right: 0, zIndex: 100,
-                            background: "#121212", border: "1px solid rgba(255,255,255,0.12)",
-                            borderRadius: 12, boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                            background: "var(--bg-card)", border: "1px solid var(--border)",
+                            borderRadius: 12, boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
                             maxHeight: 180, overflowY: "auto", padding: 6,
                           }}
                         >
@@ -424,7 +417,7 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                                 style={{
                                   padding: "10px 12px", borderRadius: 8, cursor: "pointer",
                                   fontSize: "0.85rem", fontWeight: isSelected ? 800 : 500,
-                                  color: isSelected ? "#FF4500" : "rgba(255,255,255,0.6)",
+                                  color: isSelected ? "#FF4500" : "var(--text-secondary)",
                                   background: isSelected ? "rgba(255,69,0,0.1)" : "transparent",
                                   transition: "all 0.15s",
                                 }}
@@ -438,10 +431,10 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                     </AnimatePresence>
                   </div>
 
-                  {/* AM/PM Polish Toggle */}
+                  {/* AM/PM Toggle */}
                   <div style={{
-                    display: "flex", background: "rgba(255,255,255,0.03)", borderRadius: 12, padding: 4,
-                    border: "1px solid rgba(255,255,255,0.08)", minWidth: 100
+                    display: "flex", background: "var(--bg-raised)", borderRadius: 12, padding: 4,
+                    border: "1px solid var(--border)", minWidth: 100,
                   }}>
                     {(["AM", "PM"] as const).map(p => {
                       const currentAmPm = form.time ? (parseInt(form.time.split(":")[0], 10) >= 12 ? "PM" : "AM") : "AM";
@@ -461,7 +454,7 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                             flex: 1, padding: "8px 0", border: "none", borderRadius: 8, fontSize: "0.75rem",
                             fontWeight: 800, cursor: "pointer", transition: "all 0.25s",
                             background: active ? "#FF4500" : "transparent",
-                            color: active ? "#fff" : "rgba(255,255,255,0.3)",
+                            color: active ? "#fff" : "var(--text-muted)",
                             boxShadow: active ? "0 4px 12px rgba(255,69,0,0.3)" : "none",
                           }}
                         >
@@ -482,21 +475,21 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                 onClick={() => setTagsOpen(o => !o)}
                 style={{
                   width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
-                  background: tagsOpen ? "rgba(255,69,0,0.06)" : "rgba(255,255,255,0.04)",
-                  border: tagsOpen ? "1px solid rgba(255,69,0,0.35)" : "1px solid rgba(255,255,255,0.1)",
+                  background: tagsOpen ? "rgba(255,69,0,0.06)" : "var(--bg-raised)",
+                  border: tagsOpen ? "1px solid rgba(255,69,0,0.35)" : "1px solid var(--border)",
                   borderRadius: tagsOpen ? "10px 10px 0 0" : 10,
                   padding: "11px 14px", cursor: "pointer", transition: "all 0.2s",
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ fontSize: "0.88rem", fontWeight: 600, color: "rgba(255,255,255,0.7)" }}>
+                  <span style={{ fontSize: "0.88rem", fontWeight: 600, color: "var(--text-secondary)" }}>
                     Add tags & flair
                   </span>
                   <span style={{
-                    fontSize: "0.63rem", fontWeight: 600, color: "rgba(255,255,255,0.3)",
-                    background: "rgba(255,255,255,0.05)", borderRadius: 999, padding: "2px 8px",
+                    fontSize: "0.63rem", fontWeight: 600, color: "var(--text-muted)",
+                    background: "var(--glass)", borderRadius: 999, padding: "2px 8px",
+                    border: "1px solid var(--border)",
                   }}>optional</span>
-                  {/* Active tag pills */}
                   <div style={{ display: "flex", gap: 4 }}>
                     {form.tags.nsfw && <span style={{ fontSize: "0.6rem", fontWeight: 700, color: "#ef4444", background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 999, padding: "1px 7px" }}>NSFW</span>}
                     {form.tags.spoiler && <span style={{ fontSize: "0.6rem", fontWeight: 700, color: "#a78bfa", background: "rgba(167,139,250,0.12)", border: "1px solid rgba(167,139,250,0.25)", borderRadius: 999, padding: "1px 7px" }}>Spoiler</span>}
@@ -505,7 +498,7 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                   </div>
                 </div>
                 <motion.div animate={{ rotate: tagsOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                  <FiChevronDown size={16} color="rgba(255,255,255,0.4)" />
+                  <FiChevronDown size={16} color="var(--text-muted)" />
                 </motion.div>
               </button>
 
@@ -519,9 +512,8 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                     <div style={{
                       border: "1px solid rgba(255,69,0,0.35)", borderTop: "none",
                       borderRadius: "0 0 10px 10px",
-                      background: "rgba(255,255,255,0.02)",
+                      background: "var(--bg-card)",
                     }}>
-                      {/* Toggle rows */}
                       {([
                         { key: "nsfw", label: "Not Safe for Work", desc: "Marks this post as NSFW", color: "#ef4444", bg: "rgba(239,68,68,0.1)", border: "rgba(239,68,68,0.3)" },
                         { key: "spoiler", label: "Spoiler", desc: "Hides post content behind a warning", color: "#a78bfa", bg: "rgba(167,139,250,0.1)", border: "rgba(167,139,250,0.3)" },
@@ -532,27 +524,26 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                           <div key={tag.key} style={{
                             display: "flex", alignItems: "center", justifyContent: "space-between",
                             padding: "13px 16px",
-                            borderBottom: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                            borderBottom: i < arr.length - 1 ? "1px solid var(--border)" : "none",
                           }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                               <div style={{
                                 width: 8, height: 8, borderRadius: "50%",
-                                background: on ? tag.color : "rgba(255,255,255,0.15)",
+                                background: on ? tag.color : "var(--text-muted)",
                                 transition: "background 0.2s",
                               }} />
                               <div>
-                                <div style={{ fontSize: "0.84rem", fontWeight: 600, color: on ? "#fff" : "rgba(255,255,255,0.55)" }}>{tag.label}</div>
-                                <div style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.3)", marginTop: 2 }}>{tag.desc}</div>
+                                <div style={{ fontSize: "0.84rem", fontWeight: 600, color: on ? "var(--text-primary)" : "var(--text-secondary)" }}>{tag.label}</div>
+                                <div style={{ fontSize: "0.68rem", color: "var(--text-muted)", marginTop: 2 }}>{tag.desc}</div>
                               </div>
                             </div>
-                            {/* Toggle switch */}
                             <button
                               type="button"
                               onClick={() => setForm(prev => ({ ...prev, tags: { ...prev.tags, [tag.key]: !prev.tags[tag.key as keyof typeof prev.tags] } }))}
                               style={{
                                 width: 44, height: 24, borderRadius: 999, border: "none", cursor: "pointer",
-                                background: on ? tag.bg : "rgba(255,255,255,0.08)",
-                                outline: on ? `1px solid ${tag.border}` : "1px solid rgba(255,255,255,0.1)",
+                                background: on ? tag.bg : "var(--bg-hover)",
+                                outline: on ? `1px solid ${tag.border}` : "1px solid var(--border)",
                                 position: "relative", transition: "all 0.25s", flexShrink: 0,
                               }}
                             >
@@ -561,7 +552,7 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
                                 style={{
                                   position: "absolute", top: 3, width: 18, height: 18, borderRadius: "50%",
-                                  background: on ? tag.color : "rgba(255,255,255,0.35)",
+                                  background: on ? tag.color : "var(--text-muted)",
                                   boxShadow: on ? `0 0 6px ${tag.color}80` : "none",
                                 }}
                               />
@@ -571,8 +562,8 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                       })}
 
                       {/* Flair text input */}
-                      <div style={{ padding: "12px 16px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-                        <div style={{ fontSize: "0.78rem", fontWeight: 600, color: "rgba(255,255,255,0.45)", marginBottom: 8 }}>Post flair</div>
+                      <div style={{ padding: "12px 16px", borderTop: "1px solid var(--border)" }}>
+                        <div style={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: 8 }}>Post flair</div>
                         <input
                           value={form.flair}
                           onChange={e => set("flair", e.target.value)}
@@ -607,7 +598,7 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                 />
                 <span style={{
                   position: "absolute", right: 10, bottom: -18,
-                  fontSize: "0.65rem", color: "rgba(255,255,255,0.25)",
+                  fontSize: "0.65rem", color: "var(--text-muted)",
                 }}>{form.title.length}/300</span>
               </div>
               {errors.title && <span style={{ fontSize: "0.72rem", color: "#FF4500", marginTop: 20, display: "block" }}>{errors.title}</span>}
@@ -633,17 +624,17 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                   onChange={e => { if (e.target.files?.[0]) handleImageFile(e.target.files[0]); }}
                 />
                 {form.imageUrl ? (
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "10px 14px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, background: "var(--bg-raised)", border: "1px solid var(--border)", borderRadius: 10, padding: "10px 14px" }}>
                     <img src={form.imageUrl} alt="preview" style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 8, flexShrink: 0 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "#fff", marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>Image selected</div>
-                      <div style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.35)" }}>Click remove to change</div>
+                      <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--text-primary)", marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>Image selected</div>
+                      <div style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>Click remove to change</div>
                     </div>
                     <button onClick={() => set("imageUrl", "")} style={{
                       display: "flex", alignItems: "center", gap: 5,
                       background: "rgba(255,80,80,0.08)", border: "1px solid rgba(255,80,80,0.2)",
                       borderRadius: 7, padding: "5px 10px", cursor: "pointer",
-                      color: "rgba(255,100,100,0.8)", fontSize: "0.72rem", fontWeight: 600, flexShrink: 0,
+                      color: "rgba(220,60,60,0.9)", fontSize: "0.72rem", fontWeight: 600, flexShrink: 0,
                     }}>
                       <FiX size={12} /> Remove
                     </button>
@@ -655,11 +646,11 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                     onDragLeave={() => setDragOver(false)}
                     onDrop={e => { e.preventDefault(); setDragOver(false); if (e.dataTransfer.files[0]) handleImageFile(e.dataTransfer.files[0]); }}
                     style={{
-                      border: `1.5px dashed ${dragOver ? "rgba(255,69,0,0.6)" : "rgba(255,255,255,0.1)"}`,
+                      border: `1.5px dashed ${dragOver ? "rgba(255,69,0,0.6)" : "var(--border)"}`,
                       borderRadius: 10, padding: "16px 20px",
                       display: "flex", alignItems: "center", gap: 14,
                       cursor: uploadingImage ? "not-allowed" : "pointer", transition: "all 0.2s",
-                      background: dragOver ? "rgba(255,69,0,0.04)" : "rgba(255,255,255,0.01)",
+                      background: dragOver ? "rgba(255,69,0,0.04)" : "var(--bg-raised)",
                       opacity: uploadingImage ? 0.7 : 1,
                     }}
                   >
@@ -677,10 +668,10 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                       )}
                     </div>
                     <div>
-                      <div style={{ fontSize: "0.84rem", fontWeight: 600, color: "rgba(255,255,255,0.65)", marginBottom: 2 }}>
+                      <div style={{ fontSize: "0.84rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: 2 }}>
                         {uploadingImage ? "Uploading to AWS S3..." : <span>Drop image or <span style={{ color: "#FF4500" }}>browse</span></span>}
                       </div>
-                      <div style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.28)" }}>PNG, JPG, GIF — up to 20MB</div>
+                      <div style={{ fontSize: "0.68rem", color: "var(--text-muted)" }}>PNG, JPG, GIF — up to 20MB</div>
                     </div>
                   </div>
                 )}
@@ -691,7 +682,7 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
             {form.postType === "link" && (
               <Field label="Link URL">
                 <div style={{ position: "relative" }}>
-                  <FiLink2 size={14} color="rgba(255,255,255,0.35)" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} />
+                  <FiLink2 size={14} color="var(--text-muted)" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} />
                   <input type="url" value={form.linkUrl} onChange={e => set("linkUrl", e.target.value)}
                     onFocus={focusStyle} onBlur={blurStyle}
                     placeholder="https://example.com/article"
@@ -710,73 +701,65 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
             transition={{ duration: 0.25 }}
           >
             {/* Section label */}
-            <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 14 }}>Post preview</div>
+            <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 14 }}>Post preview</div>
 
             {/* Reddit-style post card */}
             <div style={{
-              background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)",
+              background: "var(--bg-raised)", border: "1px solid var(--border)",
               borderRadius: 14, overflow: "hidden", marginBottom: 16,
             }}>
               {/* Card top bar */}
-              <div style={{ background: "rgba(255,255,255,0.02)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "10px 16px", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                {/* Subreddit */}
+              <div style={{ background: "var(--bg-hover)", borderBottom: "1px solid var(--border)", padding: "10px 16px", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                 <span style={{
                   background: "#FF4500", borderRadius: 999, padding: "3px 10px",
                   fontSize: "0.73rem", fontWeight: 800, color: "#fff",
                 }}>{subDisplay}</span>
-                {/* Posted by */}
-                <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.35)" }}>· Posted by <span style={{ color: "rgba(255,255,255,0.55)" }}>u/you</span></span>
-                {/* Scheduled time */}
+                <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>· Posted by <span style={{ color: "var(--text-secondary)" }}>u/you</span></span>
                 <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 10 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                    <FiCalendar size={11} color="rgba(255,255,255,0.3)" />
-                    <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.4)" }}>{form.date || "—"}</span>
+                    <FiCalendar size={11} color="var(--text-muted)" />
+                    <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{form.date || "—"}</span>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                    <FiClock size={11} color="rgba(255,255,255,0.3)" />
-                    <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.4)" }}>{formatAmPm(form.time)}</span>
+                    <FiClock size={11} color="var(--text-muted)" />
+                    <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{formatAmPm(form.time)}</span>
                   </div>
                 </div>
               </div>
 
               {/* Card body */}
               <div style={{ padding: "16px 16px 14px" }}>
-                {/* Tag pills row */}
                 <div style={{ display: "flex", gap: 6, marginBottom: 10, flexWrap: "wrap" }}>
                   {form.tags.nsfw && <span style={{ fontSize: "0.62rem", fontWeight: 700, color: "#ef4444", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 4, padding: "2px 7px" }}>NSFW</span>}
                   {form.tags.spoiler && <span style={{ fontSize: "0.62rem", fontWeight: 700, color: "#a78bfa", background: "rgba(167,139,250,0.1)", border: "1px solid rgba(167,139,250,0.25)", borderRadius: 4, padding: "2px 7px" }}>Spoiler</span>}
                   {form.tags.brandAffiliate && <span style={{ fontSize: "0.62rem", fontWeight: 700, color: "#60a5fa", background: "rgba(96,165,250,0.1)", border: "1px solid rgba(96,165,250,0.25)", borderRadius: 4, padding: "2px 7px" }}>Brand Affiliate</span>}
                   {form.flair && <span style={{ fontSize: "0.62rem", fontWeight: 700, color: "#fbbf24", background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.22)", borderRadius: 4, padding: "2px 7px" }}>{form.flair}</span>}
-                  <span style={{ fontSize: "0.62rem", fontWeight: 600, color: "rgba(255,255,255,0.35)", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 4, padding: "2px 7px", textTransform: "capitalize" }}>{form.postType}</span>
+                  <span style={{ fontSize: "0.62rem", fontWeight: 600, color: "var(--text-muted)", background: "var(--bg-hover)", border: "1px solid var(--border)", borderRadius: 4, padding: "2px 7px", textTransform: "capitalize" }}>{form.postType}</span>
                 </div>
 
-                {/* Title */}
                 <h3 style={{
                   fontFamily: "var(--font-space)", fontSize: "1rem", fontWeight: 700,
-                  color: "#fff", lineHeight: 1.45, marginBottom: 10,
+                  color: "var(--text-primary)", lineHeight: 1.45, marginBottom: 10,
                 }}>
-                  {form.title || <span style={{ color: "rgba(255,255,255,0.2)", fontStyle: "italic", fontWeight: 400 }}>No title entered</span>}
+                  {form.title || <span style={{ color: "var(--text-muted)", fontStyle: "italic", fontWeight: 400 }}>No title entered</span>}
                 </h3>
 
-                {/* Image preview */}
                 {form.imageUrl && (
-                  <div style={{ borderRadius: 8, overflow: "hidden", marginBottom: 10, background: "rgba(0,0,0,0.3)" }}>
+                  <div style={{ borderRadius: 8, overflow: "hidden", marginBottom: 10, background: "var(--bg-hover)" }}>
                     <img src={form.imageUrl} alt="preview" style={{ width: "100%", maxHeight: 220, objectFit: "cover", display: "block" }} />
                   </div>
                 )}
 
-                {/* Body text */}
                 {form.body && (
-                  <p style={{ fontSize: "0.84rem", color: "rgba(255,255,255,0.6)", lineHeight: 1.75, marginBottom: 0 }}>
+                  <p style={{ fontSize: "0.84rem", color: "var(--text-secondary)", lineHeight: 1.75, marginBottom: 0 }}>
                     {form.body}
                   </p>
                 )}
 
-                {/* Link */}
                 {form.linkUrl && (
                   <div style={{
                     display: "flex", alignItems: "center", gap: 8,
-                    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                    background: "var(--bg-hover)", border: "1px solid var(--border)",
                     borderRadius: 8, padding: "9px 12px", marginTop: 4,
                   }}>
                     <FiLink2 size={13} color="#FF4500" />
@@ -784,41 +767,20 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
                   </div>
                 )}
               </div>
-
-              {/* Reddit action bar */}
-              <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", padding: "8px 16px", display: "flex", gap: 4 }}>
-                {[
-                  { icon: "↑", label: "Upvote" },
-                  { icon: "↓", label: "Downvote" },
-                  { icon: "💬", label: "Comment" },
-                  { icon: "⤴", label: "Share" },
-                ].map(a => (
-                  <div key={a.label} style={{
-                    display: "flex", alignItems: "center", gap: 5,
-                    padding: "5px 10px", borderRadius: 6,
-                    color: "rgba(255,255,255,0.25)", fontSize: "0.72rem", fontWeight: 600,
-                    background: "rgba(255,255,255,0.03)",
-                  }}>
-                    <span style={{ fontSize: "0.8rem" }}>{a.icon}</span> {a.label}
-                  </div>
-                ))}
-              </div>
             </div>
 
             {/* Schedule summary strip */}
-            <div style={{
-              display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 20,
-            }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 20 }}>
               {[
                 { label: "Subreddit", value: subDisplay, color: "#FF4500" },
-                { label: "Scheduled", value: form.date && form.time ? `${form.date} · ${formatAmPm(form.time)}` : "Not set", color: "#fff" },
-                { label: "Post type", value: form.postType, color: "rgba(255,255,255,0.6)" },
+                { label: "Scheduled", value: form.date && form.time ? `${form.date} · ${formatAmPm(form.time)}` : "Not set", color: "var(--text-primary)" },
+                { label: "Post type", value: form.postType, color: "var(--text-secondary)" },
               ].map(s => (
                 <div key={s.label} style={{
-                  background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)",
+                  background: "var(--bg-raised)", border: "1px solid var(--border)",
                   borderRadius: 10, padding: "10px 12px",
                 }}>
-                  <div style={{ fontSize: "0.62rem", fontWeight: 600, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>{s.label}</div>
+                  <div style={{ fontSize: "0.62rem", fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>{s.label}</div>
                   <div style={{ fontSize: "0.78rem", fontWeight: 700, color: s.color, textTransform: "capitalize", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.value}</div>
                 </div>
               ))}
@@ -851,13 +813,13 @@ export default function ScheduleForm({ editId, step, onStepChange }: Props) {
         {step > 1 ? (
           <button onClick={() => onStepChange(step - 1)} style={{
             display: "flex", alignItems: "center", gap: 8,
-            background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+            background: "var(--bg-raised)", border: "1px solid var(--border)",
             borderRadius: 10, padding: "10px 20px", cursor: "pointer",
-            color: "rgba(255,255,255,0.6)", fontWeight: 600, fontSize: "0.88rem",
+            color: "var(--text-secondary)", fontWeight: 600, fontSize: "0.88rem",
             transition: "all 0.2s",
           }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)")}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+            onMouseEnter={e => (e.currentTarget.style.borderColor = "var(--border-hover)")}
+            onMouseLeave={e => (e.currentTarget.style.borderColor = "var(--border)")}
           >
             <FiArrowLeft size={15} /> Back
           </button>

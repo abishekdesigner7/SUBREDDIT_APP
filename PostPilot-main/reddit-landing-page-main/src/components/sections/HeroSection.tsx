@@ -68,7 +68,7 @@ export default function HeroSection() {
           {/* CTAs */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
             style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 32 }}>
-            <Link href={isLoggedIn ? "/schedule" : "/login"} style={{
+            <Link href="/schedule" style={{
               display: "inline-flex", alignItems: "center", gap: 9,
               padding: "14px 28px", background: "var(--orange)",
               color: "#fff", fontWeight: 700, fontSize: "0.95rem",
@@ -78,7 +78,7 @@ export default function HeroSection() {
             }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 10px 32px rgba(255,69,0,0.5)"; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 24px rgba(255,69,0,0.35)"; }}
-            >{isLoggedIn ? "Go to scheduler" : "Start scheduling"} <FiArrowRight size={15} /></Link>
+            >Start scheduling <FiArrowRight size={15} /></Link>
 
             <Link href="#how-it-works" style={{
               display: "inline-flex", alignItems: "center", gap: 9,

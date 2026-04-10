@@ -25,24 +25,26 @@
 }
 
 html[data-theme='light'] {
-  --bg-base:    #f9fafb;
+  --bg-base:    #f4f6f9;
   --bg-card:    #ffffff;
-  --bg-raised:  #f3f4f6;
-  --bg-hover:   #ebeef2;
+  --bg-raised:  #f0f2f5;
+  --bg-hover:   #e8ebf0;
 
   --text-primary:   #111827;
-  --text-secondary: #4b5563;
-  --text-muted:     #9ca3af;
+  --text-secondary: #374151;
+  --text-muted:     #6b7280;
 
-  --border:       #e5e7eb;
-  --border-hover: #d1d5db;
+  --border:       #d1d5db;
+  --border-hover: #9ca3af;
 
   --orange:       #FF4500;
   --orange-dim:   #d93d00;
-  --orange-glow:  rgba(255, 69, 0, 0.06);
-  
-  --blur-bg:      rgba(255, 255, 255, 0.8);
-  --glass:        rgba(0, 0, 0, 0.02);
+  --orange-glow:  rgba(255, 69, 0, 0.08);
+  --green:        #16a34a;
+  --green-glow:   rgba(22, 163, 74, 0.12);
+
+  --blur-bg:      rgba(255, 255, 255, 0.85);
+  --glass:        rgba(0, 0, 0, 0.03);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -62,6 +64,25 @@ body {
 html[data-theme='light'] .btn-login {
   background: transparent;
   border: 1.5px solid #111827;
+}
+
+/* Outline button border — white in dark mode, dark in light mode */
+.btn-outline {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+html[data-theme='light'] .btn-outline {
+  border-color: #111827;
+}
+
+/* Pricing card border — stronger stroke in light mode */
+.pricing-card-border {
+  border-color: var(--border);
+}
+html[data-theme='light'] .pricing-card-border {
+  border-color: #6b7280 !important;
+}
+html[data-theme='light'] .pricing-card-border:hover {
+  border-color: #FF4500 !important;
 }
 
 ::selection { background: #FF4500; color: #fff; }

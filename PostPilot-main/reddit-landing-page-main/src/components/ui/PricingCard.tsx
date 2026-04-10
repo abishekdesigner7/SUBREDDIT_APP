@@ -33,7 +33,7 @@ export default function PricingCard({
       transition={{ duration: 0.25 }}
       style={{
         position: "relative",
-        background: highlight ? "var(--bg-raised)" : "var(--bg-surface)",
+        background: highlight ? "var(--bg-raised)" : "var(--bg-card)",
         border: highlight ? "2px solid #FF4500" : "1px solid var(--border)",
         borderRadius: 20,
         padding: "36px 28px",

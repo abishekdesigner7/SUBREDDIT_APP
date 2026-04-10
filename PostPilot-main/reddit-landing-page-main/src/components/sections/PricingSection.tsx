@@ -96,6 +96,7 @@ export default function PricingSection() {
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
               whileHover={{ y: -6, transition: { duration: 0.2 } }}
+              className={!plan.highlight ? "pricing-card-border" : ""}
               style={{
                 position: "relative", display: "flex", flexDirection: "column",
                 background: plan.highlight ? "var(--orange-glow)" : "var(--bg-card)",
@@ -159,22 +160,23 @@ export default function PricingSection() {
                       display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                       width: "100%", padding: "12px 20px", borderRadius: 12,
                       cursor: isCurrentPlan ? "default" : loadingPlan ? "not-allowed" : "pointer",
-                      border: "none", fontWeight: 700, fontSize: "0.88rem", transition: "all 0.2s",
-                      background: isCurrentPlan ? "#22c55e" : plan.ctaPrimary ? "var(--orange)" : "#ffffff",
-                      color: isCurrentPlan ? "#fff" : plan.ctaPrimary ? "#fff" : "#FF4500",
+                      border: isCurrentPlan ? "none" : plan.ctaPrimary ? "none" : "2px solid #111827",
+                      fontWeight: 700, fontSize: "0.88rem", transition: "all 0.2s",
+                      background: isCurrentPlan ? "#22c55e" : plan.ctaPrimary ? "var(--orange)" : "transparent",
+                      color: isCurrentPlan ? "#fff" : plan.ctaPrimary ? "#fff" : "#111827",
                       boxShadow: isCurrentPlan ? "0 4px 16px rgba(34,197,94,0.3)" : plan.ctaPrimary ? "0 4px 20px var(--orange-glow)" : "none",
                     }}
                     onMouseEnter={e => {
                       if (loadingPlan || isCurrentPlan) return;
                       const el = e.currentTarget as HTMLElement;
                       if (plan.ctaPrimary) { el.style.background = "var(--orange-dim)"; el.style.boxShadow = "0 6px 28px var(--orange-glow)"; }
-                      else { el.style.opacity = "0.9"; }
+                      else { el.style.background = "#111827"; el.style.color = "#fff"; }
                     }}
                     onMouseLeave={e => {
                       if (loadingPlan || isCurrentPlan) return;
                       const el = e.currentTarget as HTMLElement;
                       if (plan.ctaPrimary) { el.style.background = "var(--orange)"; el.style.boxShadow = "0 4px 20px var(--orange-glow)"; }
-                      else { el.style.opacity = "1"; }
+                      else { el.style.background = "transparent"; el.style.color = "#111827"; }
                     }}
                   >
                     {isCurrentPlan ? "Current Plan" : loadingPlan === plan.name.toLowerCase() ? <FiLoader className="animate-spin" /> : (plan.name === "Starter" && isLoggedIn ? "Go to scheduler" : plan.cta)}

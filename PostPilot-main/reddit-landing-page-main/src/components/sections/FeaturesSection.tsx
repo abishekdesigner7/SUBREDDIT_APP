@@ -18,7 +18,7 @@ export default function FeaturesSection() {
         >
           <div style={{ display: "inline-flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
             <div style={{ width: 3, height: 16, borderRadius: 99, background: "#FF4500" }} />
-            <span style={{ fontSize: "0.78rem", fontWeight: 700, color: "#fff", letterSpacing: "0.12em", textTransform: "uppercase" }}>Features</span>
+            <span style={{ fontSize: "0.78rem", fontWeight: 700, color: "var(--text-secondary)", letterSpacing: "0.12em", textTransform: "uppercase" }}>Features</span>
           </div>
           <h2 style={{
             fontFamily: "var(--font-space)", fontSize: "clamp(2rem, 4vw, 3rem)",

@@ -128,20 +128,6 @@ export default function Navbar() {
           }}>{SITE_NAME}</span>
         </Link>
 
-        {!isHome && (
-          <Link href="/" style={{ 
-            fontSize: "0.82rem", fontWeight: 600, color: "rgba(255,255,255,0.45)", 
-            textDecoration: "none", display: "flex", alignItems: "center", gap: 6,
-            marginLeft: 8, transition: "all 0.2s",
-            padding: "6px 12px", borderRadius: 8, background: "rgba(255,255,255,0.03)"
-          }}
-          onMouseEnter={e => { e.currentTarget.style.color = "#fff"; e.currentTarget.style.background = "rgba(255,255,255,0.08)"; }}
-          onMouseLeave={e => { e.currentTarget.style.color = "rgba(255,255,255,0.45)"; e.currentTarget.style.background = "rgba(255,255,255,0.03)"; }}
-          className="desktop-only"
-          >
-            <FiArrowLeft size={14} /> Back to Home
-          </Link>
-        )}
 
         {/* Nav links */}
         <div style={{ display: "flex", gap: 8 }} className="desktop-only">
@@ -271,16 +257,6 @@ export default function Navbar() {
               display: "flex", flexDirection: "column", gap: 4,
             }}
           >
-            {!isHome && (
-              <Link href="/" onClick={() => setMenuOpen(false)} style={{
-                fontSize: "0.9rem", fontWeight: 600, color: "#FF4500",
-                textDecoration: "none", padding: "12px 0",
-                borderBottom: "1px solid rgba(255,69,0,0.2)",
-                display: "flex", alignItems: "center", gap: 8
-              }}>
-                <FiArrowLeft size={16} /> Back to Home
-              </Link>
-            )}
             {NAV_LINKS.map(l => (
               <Link key={l.label} href={isHome ? l.href : `/${l.href}`} onClick={e => handleNavClick(e, l.href, l.label)} style={{
                 fontSize: "1rem", fontWeight: 500, color: "rgba(255,255,255,0.75)",

@@ -22,7 +22,7 @@ const styles: Record<Variant, string> = {
   ghost:
     "bg-transparent text-[#FF4500] hover:bg-[rgba(255,69,0,0.08)] border border-transparent",
   outline:
-    "bg-transparent text-white hover:bg-white/5 border border-white/20 hover:border-white/40",
+    "bg-transparent text-[#FF4500] hover:bg-[rgba(255,69,0,0.06)] border btn-outline hover:border-[#FF4500]",
 };
 
 const sizes: Record<Size, string> = {

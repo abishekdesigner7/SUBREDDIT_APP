@@ -13,7 +13,7 @@ export default function AuthCallback() {
 
   const handleDone = useCallback(() => {
     setShowCelebration(false);
-    router.push("/dashboard");
+    router.push("/schedule");
   }, [router]);
 
   useEffect(() => {

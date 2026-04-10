@@ -2,37 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { FiArrowLeft, FiLoader } from "react-icons/fi";
 import { SITE_NAME } from "@/lib/constants";
 import { apiFetch } from "@/lib/api";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const inputBase: React.CSSProperties = {
-    width: "100%", background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10,
-    padding: "12px 14px 12px 40px", color: "#fff",
-    fontSize: "0.92rem", outline: "none",
-    transition: "border-color 0.2s", boxSizing: "border-box",
-  };
-
-  function focus(e: React.FocusEvent<HTMLInputElement>) {
-    e.currentTarget.style.borderColor = "rgba(255,69,0,0.5)";
-  }
-  function blur(e: React.FocusEvent<HTMLInputElement>) {
-    e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
-  }
 
   async function handleRedditLogin() {
     setLoading(true);
     setError("");
     try {
-      // Just fetch the OAuth URL directly for login
       const data = await apiFetch("/auth/reddit");
       if (data && data.url) {
         window.location.href = data.url;
@@ -47,25 +29,13 @@ export default function LoginPage() {
 
   return (
     <div style={{
-      minHeight: "100vh", background: "#0a0a0a",
+      minHeight: "100vh",
+      background: "var(--bg-base)",
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
       padding: "24px",
       backgroundImage: "radial-gradient(ellipse at 50% 0%, rgba(255,69,0,0.08) 0%, transparent 60%)",
     }}>
-      {/* Back to Home Link (Top Left) */}
-      <div style={{ position: "absolute", top: 24, left: 32 }}>
-        <Link href="/" style={{ 
-          fontSize: "0.85rem", fontWeight: 600, color: "rgba(255,255,255,0.4)", 
-          textDecoration: "none", display: "flex", alignItems: "center", gap: 8,
-          padding: "8px 16px", borderRadius: 10, background: "rgba(255,255,255,0.03)",
-          border: "1px solid rgba(255,255,255,0.08)", transition: "all 0.2s"
-        }}
-        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#fff"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.4)"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.03)"; }}
-        >
-          <FiArrowLeft size={16} /> Back to Home
-        </Link>
-      </div>
+
       {/* Logo */}
       <motion.div
         initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }}
@@ -83,7 +53,7 @@ export default function LoginPage() {
           }}>P</div>
           <span style={{
             fontFamily: "var(--font-space)", fontWeight: 700, fontSize: "1.15rem",
-            color: "#fff", letterSpacing: "-0.02em",
+            color: "var(--text-primary)", letterSpacing: "-0.02em",
           }}>{SITE_NAME}</span>
         </Link>
       </motion.div>
@@ -94,24 +64,26 @@ export default function LoginPage() {
         transition={{ duration: 0.5, delay: 0.1 }}
         style={{
           width: "100%", maxWidth: 420,
-          background: "rgba(255,255,255,0.03)",
-          border: "1px solid rgba(255,255,255,0.08)",
+          background: "var(--bg-card)",
+          border: "1px solid var(--border)",
           borderRadius: 20, padding: "36px 32px",
+          boxShadow: "0 8px 40px rgba(0,0,0,0.08)",
         }}
       >
         {/* Heading */}
         <div style={{ marginBottom: 28, textAlign: "center" }}>
           <h1 style={{
             fontFamily: "var(--font-space)", fontSize: "1.7rem",
-            fontWeight: 800, letterSpacing: "-0.03em", color: "#fff", marginBottom: 8,
+            fontWeight: 800, letterSpacing: "-0.03em",
+            color: "var(--text-primary)", marginBottom: 8,
           }}>Welcome back</h1>
-          <p style={{ fontSize: "0.88rem", color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>
+          <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>
             Sign in to your PostPilot account
           </p>
         </div>
 
         {/* Reddit Login button */}
-        <button 
+        <button
           onClick={handleRedditLogin}
           disabled={loading}
           style={{
@@ -142,14 +114,14 @@ export default function LoginPage() {
 
         {/* Disclaimer */}
         <div style={{
-          background: "rgba(255,255,255,0.03)",
+          background: "var(--bg-raised)",
           borderRadius: 12, padding: "16px",
-          border: "1px solid rgba(255,255,255,0.05)",
-          marginBottom: 20
+          border: "1px solid var(--border)",
+          marginBottom: 20,
         }}>
-          <p style={{ 
-            fontSize: "0.78rem", color: "rgba(255,255,255,0.5)", 
-            lineHeight: 1.5, textAlign: "center", margin: 0 
+          <p style={{
+            fontSize: "0.78rem", color: "var(--text-secondary)",
+            lineHeight: 1.5, textAlign: "center", margin: 0,
           }}>
             🔒 <strong>Privacy First:</strong> We only use your account to publish posts you schedule. We will <strong>never</strong> post, vote, or comment without your explicit permission.
           </p>
@@ -160,13 +132,18 @@ export default function LoginPage() {
         )}
       </motion.div>
 
-      {/* Back to home */}
+      {/* Back to home — center bottom */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} style={{ marginTop: 28 }}>
-        <Link href="/" style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.3)", textDecoration: "none", transition: "color 0.2s" }}
-          onMouseEnter={e => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
-          onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.3)")}
+        <Link href="/" style={{
+          fontSize: "0.85rem", fontWeight: 600,
+          color: "var(--text-secondary)",
+          textDecoration: "none", transition: "color 0.2s",
+          display: "inline-flex", alignItems: "center", gap: 6,
+        }}
+          onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
+          onMouseLeave={e => (e.currentTarget.style.color = "var(--text-secondary)")}
         >
-          ← Back to home
+          <FiArrowLeft size={15} /> Back to home
         </Link>
       </motion.div>
     </div>
