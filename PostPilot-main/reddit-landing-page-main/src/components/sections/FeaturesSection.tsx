@@ -198,10 +198,10 @@ function SchedulingPreview() {
             <div style={{
               width: 40, height: 40, borderRadius: 8, flexShrink: 0,
               background: post.highlight ? "rgba(255,120,0,0.2)" : "rgba(255,69,0,0.1)",
-              border: "1px solid rgba(255,255,255,0.07)",
+              border: "1px solid var(--border)",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              <FiImage size={14} color="rgba(255,255,255,0.4)" />
+              <FiImage size={14} color="#FF4500" />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{post.title}</div>
@@ -213,9 +213,9 @@ function SchedulingPreview() {
             </div>
             <div style={{
               fontSize: "0.6rem", fontWeight: 700,
-              color: i === 2 ? "rgba(255,255,255,0.4)" : post.statusColor,
-              background: i === 2 ? "rgba(255,255,255,0.05)" : `${post.statusColor}18`,
-              border: `1px solid ${i === 2 ? "rgba(255,255,255,0.08)" : post.statusColor + "35"}`,
+              color: i === 2 ? "var(--text-muted)" : post.statusColor,
+              background: i === 2 ? "var(--glass)" : `${post.statusColor}18`,
+              border: `1px solid ${i === 2 ? "var(--border)" : post.statusColor + "35"}`,
               padding: "3px 10px", borderRadius: 999, whiteSpace: "nowrap", flexShrink: 0,
             }}>{post.status}</div>
           </div>
@@ -258,7 +258,7 @@ function ImagePreview() {
               </div>
             </>
           ) : (
-            <FiImage size={16} color="rgba(255,255,255,0.3)" />
+            <FiImage size={16} color="var(--text-muted)" />
           )}
         </div>
       ))}
@@ -284,7 +284,7 @@ function AutoPublishPreview() {
           }} />
         </div>
         <span style={{ fontSize: "0.78rem", fontWeight: 600, color: "#22c55e" }}>Scheduler running</span>
-        <span style={{ marginLeft: "auto", fontSize: "0.65rem", color: "rgba(255,255,255,0.35)" }}>every 60s</span>
+        <span style={{ marginLeft: "auto", fontSize: "0.65rem", color: "var(--text-muted)" }}>every 60s</span>
       </div>
 
       {/* Recent publishes */}
@@ -371,9 +371,9 @@ function PostTypesPreview() {
           <span style={{ fontSize: "0.78rem", fontWeight: 600, color: t.active ? "var(--text-primary)" : "var(--text-secondary)" }}>{t.label}</span>
           <span style={{
             fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.06em",
-            color: t.active ? "#FF4500" : "rgba(255,255,255,0.3)",
-            background: t.active ? "rgba(255,69,0,0.12)" : "rgba(255,255,255,0.04)",
-            border: `1px solid ${t.active ? "rgba(255,69,0,0.3)" : "rgba(255,255,255,0.08)"}`,
+            color: t.active ? "#FF4500" : "var(--text-muted)",
+            background: t.active ? "rgba(255,69,0,0.12)" : "var(--glass)",
+            border: `1px solid ${t.active ? "rgba(255,69,0,0.3)" : "var(--border)"}`,
             padding: "3px 9px", borderRadius: 999, textTransform: "uppercase",
           }}>{t.tag}</span>
         </div>
